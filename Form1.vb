@@ -1,42 +1,66 @@
-﻿
-Imports System.Threading
+﻿Imports System.Threading
 Imports System.Runtime.InteropServices
 Imports System.Windows.Forms
+Imports System.Diagnostics
+
 Public Class Form1
 
+
+    Public Version = "1.02a"
     Public Spam_Enabled = False
     Private Const WH_KEYBOARD_LL As Integer = 13
     Private Const WM_KEYUP As Integer = &H101
     Private Const VK_F10 As Integer = &H79
-
+    Private Const VK_F11 As Integer = 122
     ' Delegate and callback function for the hook
     Private Delegate Function LowLevelKeyboardProc(ByVal nCode As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr
     Private HookCallback As LowLevelKeyboardProc
     Private HookID As IntPtr = IntPtr.Zero
+
+
+
+
+
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         LabelTime.Text = My.Computer.Clock.LocalTime.ToString
         Me.KeyPreview = True
         HookCallback = New LowLevelKeyboardProc(AddressOf KeyboardHookCallback)
         HookID = SetHook(HookCallback)
+        Me.Text += Version
 
     End Sub
+
+
+
+
+
+
     Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         ' Unhook the keyboard when the form is closing
-        UnhookWindowsHookEx(HookID)
+        Terminate()
     End Sub
+
+    Private Sub Terminate()
+        Process.Start("cmd", "/k taskKill /f /im Keyboard_Spammer.exe & exit")
+    End Sub
+
+
     Private Function KeyboardHookCallback(ByVal nCode As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr
         If nCode >= 0 AndAlso wParam = CType(WM_KEYUP, IntPtr) Then
             Dim vkCode As Integer = Marshal.ReadInt32(lParam)
             If vkCode = VK_F10 Then
                 If Spam_Enabled = True Then
                     ' F10 key is released, set the variable to false
-                    Spam_Enabled = False
-
-                    ' Optional: Display a message or perform other actions
+                    Stop_Spam()
+                    Me.TopMost = False
                     MsgBox("Emergency F10 key pressed. Spamming disabled.", vbOKOnly, Me.Text)
+                    If CheckBox_AlwaysOnTop.Checked = True Then
+                        Me.TopMost = True
+                    End If
                 End If
-
+            ElseIf vkCode = VK_F11 Then
+                Terminate()
             End If
         End If
         ' Call the next hook in the chain
@@ -74,23 +98,27 @@ Public Class Form1
     End Sub
 
     Private Sub ButtonStartStop_Click(sender As Object, e As EventArgs) Handles ButtonStartStop.Click
-        If Spam_Enabled = False Then
-            ButtonStartStop.ForeColor = Color.Red
-            ButtonStartStop.Text = "STOP"
-            Spam_Enabled = True
-
-
-            If CheckBox_DelayOnStart.Checked = True Then
-                Dim delayDuration As Integer = CInt(NumericUpDown_StartDelay.Value)
-                Delay(delayDuration)
+        If Spam_Enabled = True Then
+            Stop_Spam()
+        Else
+            If CheckBox_MsgBoxOnStart.Checked = True Then
+                Me.TopMost = False
+                MsgBox("Starting SPAM. Countdown (" + NumericUpDown_StartDelay.Value.ToString + "ms) will begin as soon as you click OK", MsgBoxStyle.OkOnly, Me.Text)
+                If CheckBox_AlwaysOnTop.Checked = True Then
+                    Me.TopMost = True
+                End If
             End If
             Start_Spam()
-        Else
-            ButtonStartStop.ForeColor = Color.Lime
-            ButtonStartStop.Text = "START"
-            Spam_Enabled = False
+
         End If
+
+
+
+
+
+
     End Sub
+
     Private Sub CheckBox2_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_KeyPressBeforeText.CheckedChanged
         If CheckBox_KeyPressBeforeText.Checked = True Then
             Textbox_OpenChatKeybind.Enabled = True
@@ -98,6 +126,7 @@ Public Class Form1
             Textbox_OpenChatKeybind.Enabled = False
         End If
     End Sub
+
     Private Sub Textbox_OpenChatKeybind_KeyDown(sender As Object, e As KeyEventArgs) Handles Textbox_OpenChatKeybind.KeyDown
         ' Check if the pressed key is a valid key
         If IsValidKey(e.KeyCode) Then
@@ -109,48 +138,84 @@ Public Class Form1
         e.SuppressKeyPress = True
     End Sub
 
-    ' Function to check if a key is valid (in this case, any key including F1-F12)
     Private Function IsValidKey(keyCode As Keys) As Boolean
-        ' Check if the key is in the range of F1-F12
-        Return keyCode >= Keys.F1 And keyCode <= Keys.F12 Or True
+        Return True
+
     End Function
-    Sub Start_Spam()
-        While Spam_Enabled = True
-            Dim RepeatTimes = 0
 
-            If RadioButton_RepeatIndefinitely.Checked = True Then ' SET-UP Repeat Times
-                RepeatTimes = 90000
-            Else
-                RepeatTimes = NumericUpDown_RepeatTimes.Value
-            End If
-
-            If CheckBox_MsgBoxOnStart.Checked = True Then
-                MsgBox("Starting SPAM. Will begin spamming as soon as you click OK", MsgBoxStyle.OkOnly, Me.Text)
-            End If
-
-            For i = 0 To RepeatTimes ' SPAM
-
-                If CheckBox_KeyPressBeforeText.Checked = True Then ' If enabled, Send Keybind to open Chat
-                    SendKeys.Send(Textbox_OpenChatKeybind.Text)
-                End If
-
-                SendKeys.Send(TextBox_TextToSpam.Text)
-                If CheckBox_PressEnterEOM.Checked = True Then
-                    SendKeys.Send("{ENTER}")
-                End If
-                Delay(NumericUpDown_SendDelay.Value)
-            Next
-
-
-            ' END
-            If CheckBox_MsgBoxWhenComplete.Checked = True Then
-                MsgBox("Spam Complete!", MessageBoxButtons.OK, Me.Text)
-            End If
-            Spam_Enabled = False
-
-        End While
+    Sub Stop_Spam()
+        Spam_Enabled = False ' HALT the spam
         ButtonStartStop.ForeColor = Color.Lime
         ButtonStartStop.Text = "START"
+        If CheckBox_MsgBoxWhenComplete.Checked = True Then
+            Me.TopMost = False
+            MsgBox("Spam Complete!", MessageBoxButtons.OK, Me.Text)
+            If CheckBox_AlwaysOnTop.Checked = True Then
+                Me.TopMost = True
+            End If
+        End If
+
+    End Sub
+
+    Sub Start_Spam()
+
+        Dim RepeatTimes = 0
+        Dim Spam_Text As String = TextBox_TextToSpam.Text
+
+        Spam_Enabled = True ' HALT the spam
+        ButtonStartStop.ForeColor = Color.Orange
+        ButtonStartStop.Text = "STARTING... (DELAY: " + Str(NumericUpDown_StartDelay.Value).ToString + ")"
+
+
+        Thread.Sleep(NumericUpDown_StartDelay.Value)
+
+        ButtonStartStop.ForeColor = Color.Red
+        ButtonStartStop.Text = "STOP"
+
+        If RadioButton_RepeatIndefinitely.Checked = False Then ' SET-UP Repeat Times
+            RepeatTimes = NumericUpDown_RepeatTimes.Value
+        Else
+            RepeatTimes = 99999999
+        End If
+
+        If CheckBox_KeyPressBeforeText.Checked = True Then ' If enabled, Send Keybind to open Chat
+            If Textbox_OpenChatKeybind.Text = "" Then
+                Me.TopMost = False
+                MsgBox("Please bind any key to Setting #3", MsgBoxStyle.OkOnly, Me.Text)
+                If CheckBox_AlwaysOnTop.Checked = True Then
+                    Me.TopMost = True
+                End If
+                Stop_Spam()
+            End If
+
+        End If
+
+
+
+        For i = 1 To RepeatTimes ' SPAM
+            If Spam_Enabled = True Then
+                Delay(NumericUpDown_MessageDelay.Value)
+                If CheckBox_KeyPressBeforeText.Checked = True Then
+                    SendKeys.SendWait(Textbox_OpenChatKeybind.Text)
+                End If
+                For Each letter As Char In Spam_Text
+                    SendKeys.SendWait(letter)
+                    Delay(NumericUpDown_SendDelay.Value)
+                Next
+                If CheckBox_PressEnterEOM.Checked = True Then
+                    SendKeys.SendWait("{ENTER}")
+                    Delay(NumericUpDown_SendDelay.Value)
+                End If
+
+            End If
+
+
+        Next
+
+        ' END
+        Stop_Spam()
+
+
     End Sub
 
     Private Sub CheckBox_DelayOnStart_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_DelayOnStart.CheckedChanged
@@ -160,7 +225,6 @@ Public Class Form1
             NumericUpDown_StartDelay.Enabled = False
         End If
     End Sub
-
 
     Private Sub Delay(milliseconds As Integer)
         ' Pause the execution of the current thread for the specified duration
@@ -173,5 +237,9 @@ Public Class Form1
         Else
             Me.TopMost = False
         End If
+    End Sub
+
+    Private Sub GroupBox1_Enter(sender As Object, e As EventArgs) Handles GroupBox1.Enter
+
     End Sub
 End Class

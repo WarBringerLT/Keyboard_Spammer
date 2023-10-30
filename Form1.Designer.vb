@@ -28,6 +28,8 @@ Partial Class Form1
         TextBox_TextToSpam = New TextBox()
         GroupBox1 = New GroupBox()
         GroupBox2 = New GroupBox()
+        NumericUpDown_MessageDelay = New NumericUpDown()
+        Label13 = New Label()
         CheckBox_AlwaysOnTop = New CheckBox()
         Label11 = New Label()
         NumericUpDown_SendDelay = New NumericUpDown()
@@ -54,8 +56,10 @@ Partial Class Form1
         LabelTime = New Label()
         Clock = New Timer(components)
         Label10 = New Label()
+        Label12 = New Label()
         GroupBox1.SuspendLayout()
         GroupBox2.SuspendLayout()
+        CType(NumericUpDown_MessageDelay, ComponentModel.ISupportInitialize).BeginInit()
         CType(NumericUpDown_SendDelay, ComponentModel.ISupportInitialize).BeginInit()
         CType(NumericUpDown_RepeatTimes, ComponentModel.ISupportInitialize).BeginInit()
         CType(NumericUpDown_StartDelay, ComponentModel.ISupportInitialize).BeginInit()
@@ -72,18 +76,20 @@ Partial Class Form1
         ' 
         ' TextBox_TextToSpam
         ' 
-        TextBox_TextToSpam.BackColor = SystemColors.WindowText
+        TextBox_TextToSpam.BackColor = Color.Black
         TextBox_TextToSpam.BorderStyle = BorderStyle.None
         TextBox_TextToSpam.ForeColor = Color.Yellow
-        TextBox_TextToSpam.Location = New Point(6, 22)
+        TextBox_TextToSpam.Location = New Point(12, 22)
         TextBox_TextToSpam.Multiline = True
         TextBox_TextToSpam.Name = "TextBox_TextToSpam"
         TextBox_TextToSpam.PlaceholderText = "Enter the text here "
-        TextBox_TextToSpam.Size = New Size(748, 207)
+        TextBox_TextToSpam.Size = New Size(742, 207)
         TextBox_TextToSpam.TabIndex = 1
         ' 
         ' GroupBox1
         ' 
+        GroupBox1.BackColor = Color.Black
+        GroupBox1.BackgroundImageLayout = ImageLayout.Zoom
         GroupBox1.Controls.Add(TextBox_TextToSpam)
         GroupBox1.ForeColor = Color.Yellow
         GroupBox1.Location = New Point(12, 7)
@@ -95,6 +101,8 @@ Partial Class Form1
         ' 
         ' GroupBox2
         ' 
+        GroupBox2.Controls.Add(NumericUpDown_MessageDelay)
+        GroupBox2.Controls.Add(Label13)
         GroupBox2.Controls.Add(CheckBox_AlwaysOnTop)
         GroupBox2.Controls.Add(Label11)
         GroupBox2.Controls.Add(NumericUpDown_SendDelay)
@@ -119,17 +127,38 @@ Partial Class Form1
         GroupBox2.Controls.Add(Label1)
         GroupBox2.Controls.Add(ButtonStartStop)
         GroupBox2.ForeColor = Color.Yellow
-        GroupBox2.Location = New Point(11, 248)
+        GroupBox2.Location = New Point(11, 242)
         GroupBox2.Name = "GroupBox2"
         GroupBox2.Size = New Size(761, 184)
         GroupBox2.TabIndex = 3
         GroupBox2.TabStop = False
         GroupBox2.Text = "Settings"
         ' 
+        ' NumericUpDown_MessageDelay
+        ' 
+        NumericUpDown_MessageDelay.BackColor = Color.Black
+        NumericUpDown_MessageDelay.BorderStyle = BorderStyle.None
+        NumericUpDown_MessageDelay.ForeColor = Color.Chartreuse
+        NumericUpDown_MessageDelay.Location = New Point(606, 126)
+        NumericUpDown_MessageDelay.Maximum = New Decimal(New Integer() {999999, 0, 0, 0})
+        NumericUpDown_MessageDelay.Name = "NumericUpDown_MessageDelay"
+        NumericUpDown_MessageDelay.Size = New Size(82, 19)
+        NumericUpDown_MessageDelay.TabIndex = 28
+        NumericUpDown_MessageDelay.Value = New Decimal(New Integer() {1000, 0, 0, 0})
+        ' 
+        ' Label13
+        ' 
+        Label13.AutoSize = True
+        Label13.Location = New Point(503, 125)
+        Label13.Name = "Label13"
+        Label13.Size = New Size(209, 15)
+        Label13.TabIndex = 27
+        Label13.Text = "9.  Message Delay                               ms"
+        ' 
         ' CheckBox_AlwaysOnTop
         ' 
         CheckBox_AlwaysOnTop.AutoSize = True
-        CheckBox_AlwaysOnTop.Location = New Point(33, 122)
+        CheckBox_AlwaysOnTop.Location = New Point(33, 123)
         CheckBox_AlwaysOnTop.Name = "CheckBox_AlwaysOnTop"
         CheckBox_AlwaysOnTop.Size = New Size(101, 19)
         CheckBox_AlwaysOnTop.TabIndex = 26
@@ -139,7 +168,7 @@ Partial Class Form1
         ' Label11
         ' 
         Label11.AutoSize = True
-        Label11.Location = New Point(11, 123)
+        Label11.Location = New Point(11, 124)
         Label11.Name = "Label11"
         Label11.Size = New Size(16, 15)
         Label11.TabIndex = 25
@@ -150,7 +179,7 @@ Partial Class Form1
         NumericUpDown_SendDelay.BackColor = Color.Black
         NumericUpDown_SendDelay.BorderStyle = BorderStyle.None
         NumericUpDown_SendDelay.ForeColor = Color.Chartreuse
-        NumericUpDown_SendDelay.Location = New Point(642, 106)
+        NumericUpDown_SendDelay.Location = New Point(606, 106)
         NumericUpDown_SendDelay.Maximum = New Decimal(New Integer() {999999, 0, 0, 0})
         NumericUpDown_SendDelay.Name = "NumericUpDown_SendDelay"
         NumericUpDown_SendDelay.Size = New Size(82, 19)
@@ -160,16 +189,16 @@ Partial Class Form1
         ' Label9
         ' 
         Label9.AutoSize = True
-        Label9.Location = New Point(552, 106)
+        Label9.Location = New Point(501, 105)
         Label9.Name = "Label9"
-        Label9.Size = New Size(198, 15)
+        Label9.Size = New Size(212, 15)
         Label9.TabIndex = 23
-        Label9.Text = "7.     Send Delay                               ms"
+        Label9.Text = "7.   Keypress Delay                               ms"
         ' 
         ' Label8
         ' 
         Label8.AutoSize = True
-        Label8.Location = New Point(552, 81)
+        Label8.Location = New Point(501, 79)
         Label8.Name = "Label8"
         Label8.Size = New Size(16, 15)
         Label8.TabIndex = 22
@@ -178,7 +207,7 @@ Partial Class Form1
         ' CheckBox_PressEnterEOM
         ' 
         CheckBox_PressEnterEOM.AutoSize = True
-        CheckBox_PressEnterEOM.Location = New Point(579, 81)
+        CheckBox_PressEnterEOM.Location = New Point(528, 79)
         CheckBox_PressEnterEOM.Name = "CheckBox_PressEnterEOM"
         CheckBox_PressEnterEOM.Size = New Size(176, 19)
         CheckBox_PressEnterEOM.TabIndex = 2
@@ -219,7 +248,7 @@ Partial Class Form1
         ' Label6
         ' 
         Label6.AutoSize = True
-        Label6.Location = New Point(552, 19)
+        Label6.Location = New Point(503, 29)
         Label6.Name = "Label6"
         Label6.Size = New Size(16, 15)
         Label6.TabIndex = 18
@@ -230,7 +259,7 @@ Partial Class Form1
         NumericUpDown_RepeatTimes.BackColor = Color.Black
         NumericUpDown_RepeatTimes.BorderStyle = BorderStyle.None
         NumericUpDown_RepeatTimes.ForeColor = Color.Chartreuse
-        NumericUpDown_RepeatTimes.Location = New Point(666, 48)
+        NumericUpDown_RepeatTimes.Location = New Point(594, 29)
         NumericUpDown_RepeatTimes.Maximum = New Decimal(New Integer() {999999, 0, 0, 0})
         NumericUpDown_RepeatTimes.Name = "NumericUpDown_RepeatTimes"
         NumericUpDown_RepeatTimes.Size = New Size(45, 19)
@@ -241,7 +270,7 @@ Partial Class Form1
         ' 
         RadioButton_RepeatTimes.AutoSize = True
         RadioButton_RepeatTimes.Checked = True
-        RadioButton_RepeatTimes.Location = New Point(601, 47)
+        RadioButton_RepeatTimes.Location = New Point(528, 28)
         RadioButton_RepeatTimes.Name = "RadioButton_RepeatTimes"
         RadioButton_RepeatTimes.Size = New Size(155, 19)
         RadioButton_RepeatTimes.TabIndex = 16
@@ -252,7 +281,7 @@ Partial Class Form1
         ' RadioButton_RepeatIndefinitely
         ' 
         RadioButton_RepeatIndefinitely.AutoSize = True
-        RadioButton_RepeatIndefinitely.Location = New Point(601, 22)
+        RadioButton_RepeatIndefinitely.Location = New Point(528, 52)
         RadioButton_RepeatIndefinitely.Name = "RadioButton_RepeatIndefinitely"
         RadioButton_RepeatIndefinitely.Size = New Size(123, 19)
         RadioButton_RepeatIndefinitely.TabIndex = 15
@@ -364,7 +393,7 @@ Partial Class Form1
         ' LabelTime
         ' 
         LabelTime.AutoSize = True
-        LabelTime.Location = New Point(649, 446)
+        LabelTime.Location = New Point(645, 446)
         LabelTime.Name = "LabelTime"
         LabelTime.Size = New Size(49, 15)
         LabelTime.TabIndex = 5
@@ -379,23 +408,36 @@ Partial Class Form1
         ' 
         Label10.AutoSize = True
         Label10.ForeColor = Color.Red
-        Label10.Location = New Point(230, 446)
+        Label10.Location = New Point(248, 429)
         Label10.Name = "Label10"
-        Label10.Size = New Size(348, 15)
+        Label10.Size = New Size(312, 15)
         Label10.TabIndex = 25
-        Label10.Text = "To Start/Stop you can PRESS   F10   if unable to open this window"
+        Label10.Text = "To Force Terminate spam (Force STOP) you can PRESS F11 "
+        ' 
+        ' Label12
+        ' 
+        Label12.AutoSize = True
+        Label12.ForeColor = Color.Red
+        Label12.Location = New Point(261, 444)
+        Label12.Name = "Label12"
+        Label12.Size = New Size(283, 15)
+        Label12.TabIndex = 26
+        Label12.Text = "To KILL you can PRESS F11 if unable to close this app"
         ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = SystemColors.ControlText
+        BackgroundImageLayout = ImageLayout.Stretch
         ClientSize = New Size(784, 461)
+        Controls.Add(Label12)
         Controls.Add(Label10)
         Controls.Add(LabelTime)
         Controls.Add(GroupBox2)
         Controls.Add(GroupBox1)
         Controls.Add(LabelFooter)
+        DoubleBuffered = True
         ForeColor = Color.Yellow
         FormBorderStyle = FormBorderStyle.FixedToolWindow
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
@@ -404,11 +446,12 @@ Partial Class Form1
         MinimizeBox = False
         MinimumSize = New Size(800, 500)
         Name = "Form1"
-        Text = "WarBringerLT's Keyboard Spammer"
+        Text = "WarBringerLT's Keyboard Spammer "
         GroupBox1.ResumeLayout(False)
         GroupBox1.PerformLayout()
         GroupBox2.ResumeLayout(False)
         GroupBox2.PerformLayout()
+        CType(NumericUpDown_MessageDelay, ComponentModel.ISupportInitialize).EndInit()
         CType(NumericUpDown_SendDelay, ComponentModel.ISupportInitialize).EndInit()
         CType(NumericUpDown_RepeatTimes, ComponentModel.ISupportInitialize).EndInit()
         CType(NumericUpDown_StartDelay, ComponentModel.ISupportInitialize).EndInit()
@@ -446,4 +489,7 @@ Partial Class Form1
     Friend WithEvents Label10 As Label
     Friend WithEvents CheckBox_AlwaysOnTop As CheckBox
     Friend WithEvents Label11 As Label
+    Friend WithEvents Label12 As Label
+    Friend WithEvents NumericUpDown_MessageDelay As NumericUpDown
+    Friend WithEvents Label13 As Label
 End Class
